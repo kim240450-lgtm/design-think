@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Thinking Learning Guide & Exam Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Prompt', 'Sarabun', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-tr from-sky-500 to-indigo-600 rounded-xl text-white shadow-md shadow-sky-500/20">
+                    <i data-lucide="lightbulb" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide bg-gradient-to-r from-sky-600 to-indigo-600 dark:from-sky-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                        Design Thinking
+                    </h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Guide & Exam Simulator</p>
+                </div>
+            </div>
+
+            <!-- Main App Nav Tabs -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                <button onclick="switchAppTab('guide')" id="nav-guide" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white dark:bg-slate-700 text-sky-600 dark:text-sky-400 shadow-sm flex items-center gap-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                    <span class="lang-th">คู่มือเรียนรู้</span>
+                    <span class="lang-en hidden">Learning Guide</span>
+                </button>
+                <button onclick="switchAppTab('tools')" id="nav-tools" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+                    <i data-lucide="wrench" class="w-4 h-4"></i>
+                    <span class="lang-th">เครื่องมือช่วยคิด</span>
+                    <span class="lang-en hidden">Interactive Tools</span>
+                </button>
+                <button onclick="switchAppTab('exam')" id="nav-exam" class="nav-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all flex items-center gap-1.5">
+                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                    <span class="lang-th">จำลองข้อสอบ</span>
+                    <span class="lang-en hidden">Exam Simulator</span>
+                </button>
+            </nav>
+
+            <!-- Global Search Bar & Controls -->
+            <div class="flex items-center gap-2">
+                <!-- Search Input (For Guide Mode) -->
+                <div class="relative hidden sm:block max-w-xs" id="searchWrapper">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="ค้นหา... (Search...)" 
+                           class="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all dark:text-slate-200 placeholder-slate-400">
+                </div>
+
+                <!-- Language Selector -->
+                <div class="relative inline-block text-left">
+                    <select id="langSelect" onchange="setLanguage(this.value)" class="appearance-none bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium rounded-lg px-2.5 py-1.5 pr-6 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500 dark:text-slate-200">
+                        <option value="both">🌐 TH/EN</option>
+                        <option value="th">🇹🇭 TH</option>
+                        <option value="en">🇬🇧 EN</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+                </div>
+
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleDarkMode()" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="สลับโหมดมืด/สว่าง">
+                    <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Nav Bar -->
+        <div class="flex md:hidden border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 px-4 py-2 justify-around">
+            <button onclick="switchAppTab('guide')" id="mobile-nav-guide" class="text-xs font-medium text-sky-600 dark:text-sky-400 flex items-center gap-1">
+                <i data-lucide="book-open" class="w-4 h-4"></i> คู่มือ
+            </button>
+            <button onclick="switchAppTab('tools')" id="mobile-nav-tools" class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i data-lucide="wrench" class="w-4 h-4"></i> เครื่องมือ
+            </button>
+            <button onclick="switchAppTab('exam')" id="mobile-nav-exam" class="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> ข้อสอบ
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+
+        <!-- VIEW 1: LEARNING GUIDE -->
+        <div id="view-guide" class="app-view space-y-12">
+            <!-- Hero Section -->
+            <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-600 via-indigo-600 to-purple-600 text-white p-8 sm:p-12 shadow-xl shadow-indigo-500/10">
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-md text-white border border-white/20">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Human-Centered Innovation
+                    </span>
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        <span class="lang-th">คู่มือเรียนรู้กระบวนการคิดเชิงออกแบบ</span>
+                        <span class="lang-en block text-2xl sm:text-3xl font-medium opacity-90">Design Thinking Learning Guide</span>
+                    </h2>
+                    <p class="text-sm sm:text-base text-sky-100 font-light leading-relaxed">
+                        <span class="lang-th">กรอบการทำงานเพื่อการสร้างสรรค์นวัตกรรม โดยเน้นทำความเข้าใจมนุษย์ สร้างสมดุลระหว่าง ความต้องการของผู้ใช้ (Desirability), ความเป็นไปได้ทางเทคโนโลยี (Feasibility) และ ความคุ้มค่าทางธุรกิจ (Viability)</span>
+                        <span class="lang-en block mt-1">A human-centered framework for innovation balancing Desirability, Feasibility, and Business Viability.</span>
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3">
+                        <a href="#stages" class="px-5 py-2.5 rounded-xl bg-white text-indigo-700 font-semibold text-sm hover:bg-sky-50 transition-colors shadow-sm flex items-center gap-2">
+                            <i data-lucide="compass" class="w-4 h-4"></i> สำรวจ 5 ขั้นตอน
+                        </a>
+                        <button onclick="switchAppTab('exam')" class="px-5 py-2.5 rounded-xl bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-semibold text-sm transition-colors border border-white/20 flex items-center gap-2">
+                            <i data-lucide="graduation-cap" class="w-4 h-4"></i> ทดสอบข้อสอบจำลอง (18 ข้อ)
+                        </button>
+                    </div>
+                </div>
+                <div class="absolute -right-12 -bottom-12 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+                <div class="absolute right-1/4 -top-12 w-60 h-60 rounded-full bg-purple-400/20 blur-2xl pointer-events-none"></div>
+            </section>
+
+            <!-- 5 Core Stages -->
+            <section id="stages" class="space-y-6 scroll-mt-20">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="layers" class="w-6 h-6 text-sky-500"></i>
+                            <span class="lang-th">5 ขั้นตอนหลักของ Design Thinking</span>
+                            <span class="lang-en text-lg text-slate-500 dark:text-slate-400">/ 5 Core Stages</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">คลิกเลือกขั้นตอนเพื่อดูรายละเอียด เป้าหมาย เทคนิค และข้อแนะนำ</p>
+                    </div>
+                </div>
+
+                <!-- Stage Switcher Tabs -->
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-3">
+                    <button onclick="switchStage(1)" id="stage-btn-1" class="stage-btn p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-left transition-all hover:border-sky-500 focus:outline-none flex flex-col justify-between h-28 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="w-8 h-8 rounded-xl bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">1</span>
+                            <i data-lucide="heart" class="w-5 h-5 text-rose-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Empathize</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">เข้าใจผู้ใช้</p>
+                        </div>
+                    </button>
+
+                    <button onclick="switchStage(2)" id="stage-btn-2" class="stage-btn p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-left transition-all hover:border-amber-500 focus:outline-none flex flex-col justify-between h-28 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">2</span>
+                            <i data-lucide="target" class="w-5 h-5 text-amber-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Define</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">ระบุปัญหา</p>
+                        </div>
+                    </button>
+
+                    <button onclick="switchStage(3)" id="stage-btn-3" class="stage-btn p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-left transition-all hover:border-emerald-500 focus:outline-none flex flex-col justify-between h-28 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">3</span>
+                            <i data-lucide="lightbulb" class="w-5 h-5 text-emerald-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Ideate</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">ระดมความคิด</p>
+                        </div>
+                    </button>
+
+                    <button onclick="switchStage(4)" id="stage-btn-4" class="stage-btn p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-left transition-all hover:border-sky-500 focus:outline-none flex flex-col justify-between h-28 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">4</span>
+                            <i data-lucide="hammer" class="w-5 h-5 text-sky-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Prototype</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">สร้างต้นแบบ</p>
+                        </div>
+                    </button>
+
+                    <button onclick="switchStage(5)" id="stage-btn-5" class="stage-btn p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-left transition-all hover:border-purple-500 focus:outline-none flex flex-col justify-between h-28 group col-span-2 sm:col-span-1 shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">5</span>
+                            <i data-lucide="flask-conical" class="w-5 h-5 text-purple-500"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-100">Test</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">ทดสอบผู้ใช้</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Stage Content -->
+                <div id="stageContent" class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-md transition-all">
+                </div>
+            </section>
+
+            <!-- Methods Catalog -->
+            <section id="tools-catalog" class="space-y-6 scroll-mt-20">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                            <i data-lucide="briefcase" class="w-6 h-6 text-indigo-500"></i>
+                            <span class="lang-th">เทคนิคและเครื่องมือสำคัญ (Tools & Methods)</span>
+                            <span class="lang-en text-lg text-slate-500 dark:text-slate-400">/ Methods Catalog</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">คลังเครื่องมือปฏิบัติจริงแยกตามหมวดหมู่</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5" id="toolCategoryFilters">
+                        <button onclick="filterToolCategory('all')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition-colors">ทั้งหมด (All)</button>
+                        <button onclick="filterToolCategory('empathize')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">1. Empathize</button>
+                        <button onclick="filterToolCategory('define')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">2. Define</button>
+                        <button onclick="filterToolCategory('ideate')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">3. Ideate</button>
+                        <button onclick="filterToolCategory('prototype')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">4. Prototype</button>
+                        <button onclick="filterToolCategory('test')" class="tool-cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-colors">5. Test</button>
+                    </div>
+                </div>
+
+                <div id="toolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 2: INTERACTIVE WORKSPACES -->
+        <div id="view-tools" class="app-view hidden space-y-8">
+            <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                <h3 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                    <i data-lucide="sparkle" class="w-6 h-6 text-amber-500"></i>
+                    <span class="lang-th">เครื่องมือฝึกปฏิบัติแบบโต้ตอบ (Interactive Tools)</span>
+                    <span class="lang-en text-lg text-slate-500 dark:text-slate-400">/ Practice Generators</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">ทดลองสร้าง Empathy Map และ How Might We (HMW) แบบเรียลไทม์</p>
+            </div>
+
+            <!-- Tool 1: Empathy Map Generator -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-md space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-500">
+                            <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold">Empathy Map Generator</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">แบบฟอร์มรวบรวมพฤติกรรมและความรู้สึกของผู้ใช้</p>
+                        </div>
+                    </div>
+                    <button onclick="clearEmpathyMap()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300">
+                        ล้างข้อมูล
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i data-lucide="message-square" class="w-4 h-4 text-sky-500"></i> Says (คำพูดคำจา)
+                        </label>
+                        <textarea id="empathysays" rows="3" placeholder="คำพูดตรงๆ จากการสัมภาษณ์ผู้ใช้..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i data-lucide="brain" class="w-4 h-4 text-purple-500"></i> Thinks (ความคิด)
+                        </label>
+                        <textarea id="empathythinks" rows="3" placeholder="สิ่งที่อยู่ในใจแต่ไม่อยากพูดออกมา..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i data-lucide="activity" class="w-4 h-4 text-emerald-500"></i> Does (พฤติกรรม/การกระทำ)
+                        </label>
+                        <textarea id="empathydoes" rows="3" placeholder="การแสดงออก สีหน้า ท่าทาง พฤติกรรมที่สังเกตได้..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700/60 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i data-lucide="smile" class="w-4 h-4 text-amber-500"></i> Feels (อารมณ์ความรู้สึก)
+                        </label>
+                        <textarea id="empathyfeels" rows="3" placeholder="อารมณ์ เช่น กังวล ตื่นเต้น หงุดหงิด ประทับใจ..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-sky-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/40 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                            <i data-lucide="frown" class="w-4 h-4"></i> Pains (ปัญหา/อุปสรรค)
+                        </label>
+                        <textarea id="empathypains" rows="3" placeholder="ข้อจำกัด ความกังวล ความยากลำบากที่เจอ..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-rose-500 outline-none"></textarea>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                            <i data-lucide="trophy" class="w-4 h-4"></i> Gains (เป้าหมาย/สิ่งที่ต้องการ)
+                        </label>
+                        <textarea id="empathygains" rows="3" placeholder="ผลลัพธ์ที่อยากได้ ความสำเร็จที่คาดหวัง..." class="w-full text-sm p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool 2: HMW Builder -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-md space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <div class="p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-500">
+                        <i data-lucide="wand-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold">How Might We (HMW) Builder</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">สร้างโจทย์ปัญหา "เราจะทำอย่างไรให้..." ตามกรอบ Point of View (POV)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300">1. ผู้ใช้คือใคร? (User)</label>
+                        <input type="text" id="hmwUser" oninput="generateHMW()" placeholder="เช่น คุณแม่วัยทำงาน" class="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300">2. ต้องการอะไร? (Need)</label>
+                        <input type="text" id="hmwNeed" oninput="generateHMW()" placeholder="เช่น เตรียมอาหารสุขภาพที่รวดเร็ว" class="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-300">3. เนื่องจากอะไร? (Insight)</label>
+                        <input type="text" id="hmwInsight" oninput="generateHMW()" placeholder="เช่น มีเวลาน้อยและไม่อยากให้ลูกกินอาหารสำเร็จรูป" class="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/5 border border-amber-200/60 dark:border-amber-700/40 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wide">ผลลัพธ์คำถาม HMW (Generated Statement)</span>
+                        <button onclick="copyHMW()" class="text-xs flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-amber-600">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i> คัดลอก
+                        </button>
+                    </div>
+                    <p id="hmwResult" class="text-lg font-semibold text-slate-800 dark:text-slate-100 italic">
+                        "เราจะทำอย่างไรให้..."
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: COMPREHENSIVE EXAM SIMULATOR -->
+        <div id="view-exam" class="app-view hidden space-y-8">
+            <!-- Exam Header Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-md space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400">
+                            <i data-lucide="graduation-cap" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold tracking-tight">ระบบจำลองข้อสอบ Design Thinking</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Design Thinking Certification & Assessment Mock Exam</p>
+                        </div>
+                    </div>
+
+                    <!-- Exam Controls Setup -->
+                    <div id="examSetupControls" class="flex flex-wrap items-center gap-3">
+                        <!-- Mode Selector -->
+                        <div class="flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold">
+                            <button onclick="setExamMode('mock')" id="mode-btn-mock" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                                🏆 ข้อสอบจำลองจริง (Mock Exam)
+                            </button>
+                            <button onclick="setExamMode('drill')" id="mode-btn-drill" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                                🎯 โหมดฝึกซ้อมรายบท (Drill Mode)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drill Mode Stage Selector (Hidden in Mock Mode) -->
+                <div id="drillCategorySection" class="hidden space-y-2">
+                    <label class="text-xs font-semibold text-slate-600 dark:text-slate-300">เลือกบทเรียนที่ต้องการฝึกซ้อม:</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterDrillStage('all')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-600 text-white">ทั้งหมด (All 18 ข้อ)</button>
+                        <button onclick="filterDrillStage('empathize')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Empathize</button>
+                        <button onclick="filterDrillStage('define')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Define</button>
+                        <button onclick="filterDrillStage('ideate')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Ideate</button>
+                        <button onclick="filterDrillStage('prototype')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Prototype</button>
+                        <button onclick="filterDrillStage('test')" class="drill-stage-btn px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">Test</button>
+                    </div>
+                </div>
+
+                <!-- Start Action Bar -->
+                <div id="examStartPanel" class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1 text-center sm:text-left">
+                        <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200">พร้อมทดสอบความรู้ของคุณหรือยัง?</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">ข้อสอบมีทั้งหมด 18 ข้อ ครอบคลุมเคสตัวอย่างจำลอง สถานการณ์จริง และหลักการสำคัญ</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-400 cursor-pointer">
+                            <input type="checkbox" id="timerToggle" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                            จับเวลา 20 นาที
+                        </label>
+                        <button onclick="startExamSession()" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center gap-2">
+                            <i data-lucide="play" class="w-4 h-4"></i> เริ่มทำข้อสอบ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Exam Interface (Hidden initially) -->
+                <div id="activeExamPanel" class="hidden space-y-6">
+                    <!-- Status Bar & Timer -->
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
+                        <div class="flex items-center gap-3">
+                            <span id="examProgressBadge" class="px-3 py-1 rounded-lg text-xs font-bold bg-indigo-600 text-white">ข้อที่ 1 / 18</span>
+                            <span id="examStageBadge" class="text-xs font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">STAGE: EMPATHIZE</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div id="examTimerDisplay" class="flex items-center gap-1.5 font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                                <i data-lucide="clock" class="w-4 h-4"></i> <span id="timerCountdown">20:00</span>
+                            </div>
+                            <button onclick="submitExam()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors flex items-center gap-1">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i> ส่งข้อสอบ
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Navigator Grid -->
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Question Navigator (ตัวนำทางข้อสอบ)</span>
+                        <div id="questionNavGrid" class="flex flex-wrap gap-1.5">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Single Question Box -->
+                    <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-700/60 space-y-6">
+                        <div class="space-y-2">
+                            <h4 id="questionTitle" class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                                <!-- Question text -->
+                            </h4>
+                            <p id="questionContext" class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 italic hidden">
+                                <!-- Context scenario if any -->
+                            </p>
+                        </div>
+
+                        <!-- Options List -->
+                        <div id="optionsContainer" class="space-y-2.5">
+                            <!-- Options injected by JS -->
+                        </div>
+
+                        <!-- Instant Feedback Box (For Drill Mode) -->
+                        <div id="drillFeedbackBox" class="hidden p-4 rounded-xl text-xs sm:text-sm space-y-2 transition-all">
+                        </div>
+
+                        <!-- Next / Previous Controls -->
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-slate-700/60">
+                            <button onclick="navigateQuestion(-1)" id="prevQBtn" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold flex items-center gap-1.5 disabled:opacity-40">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i> ข้อก่อนหน้า
+                            </button>
+                            <button onclick="navigateQuestion(1)" id="nextQBtn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5">
+                                ข้อถัดไป <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Score Summary Dashboard (Hidden initially) -->
+                <div id="examResultPanel" class="hidden space-y-8">
+                    <!-- Score Header Card -->
+                    <div class="p-8 rounded-3xl bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 text-white shadow-xl space-y-6 text-center sm:text-left">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+                            <div class="space-y-2">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/30 text-indigo-200 border border-indigo-400/30">
+                                    สรุปผลการจำลองสอบ (Exam Performance Summary)
+                                </span>
+                                <h3 class="text-2xl sm:text-4xl font-extrabold" id="resultGradeTitle">ผ่านการทดสอบ (Passed)</h3>
+                                <p class="text-xs sm:text-sm text-indigo-200" id="resultSubMessage">คุณมีความรู้ความเข้าใจกระบวนการคิดเชิงออกแบบในระดับดีเยี่ยม</p>
+                            </div>
+                            <!-- Circular or Big Score Display -->
+                            <div class="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center min-w-[160px]">
+                                <span class="text-4xl sm:text-5xl font-black text-amber-400" id="resultScoreText">16/18</span>
+                                <span class="block text-xs font-semibold text-slate-300 mt-1" id="resultPercentText">88.8%</span>
+                            </div>
+                        </div>
+
+                        <!-- Breakdown Progress Bars -->
+                        <div class="space-y-3 pt-4 border-t border-white/10">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">คะแนนจำแนกตามรายขั้นตอน (Score Breakdown)</h4>
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-3" id="stageBreakdownGrid">
+                                <!-- Injected dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="pt-2 flex flex-wrap gap-3 justify-center sm:justify-start">
+                            <button onclick="startExamSession()" class="px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-xs sm:text-sm transition-colors flex items-center gap-2">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> ทำข้อสอบอีกครั้ง
+                            </button>
+                            <a href="#resultReviewSection" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm transition-colors border border-white/20 flex items-center gap-2">
+                                <i data-lucide="file-search" class="w-4 h-4"></i> ดูเฉลยละเอียดทุกข้อ
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Answer Key & Explanations Review Section -->
+                    <div id="resultReviewSection" class="space-y-6">
+                        <div class="border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <h4 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-500"></i> เฉลยและคำอธิบายโดยละเอียด (Detailed Explanations)
+                            </h4>
+                        </div>
+                        <div id="reviewQuestionsList" class="space-y-6">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 transition-colors">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 dark:text-slate-400 space-y-2">
+            <p>© 2026 Design Thinking Interactive Learning Guide & Exam Simulator.</p>
+            <p>Based on Stanford d.school Design Thinking Framework</p>
+        </div>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Global App State
+        let currentLang = 'both';
+        let activeAppTab = 'guide';
+        let currentStage = 1;
+
+        // Comprehensive 18-Question Exam Bank
+        const examQuestionsBank = [
+            // EMPATHIZE
+            {
+                id: 1,
+                stage: "empathize",
+                stageTh: "Empathize",
+                titleTh: "ข้อใดอธิบายเป้าหมายที่แท้จริงของการทำ Empathize ใน Design Thinking ได้ถูกต้องที่สุด?",
+                titleEn: "Which statement best describes the true goal of the Empathize stage?",
+                contextTh: "ทีมออกแบบกำลังเริ่มโครงการพัฒนาบริการธนาคารสำหรับผู้สูงอายุ",
+                optionsTh: [
+                    "เพื่อสอบถามความต้องการของลูกค้าและสร้างตามที่ลูกค้าสั่งทันที",
+                    "เพื่อสังเกต ทำความเข้าใจอารมณ์ ความรู้สึก และแรงจูงใจที่ซ่อนอยู่ของผู้ใช้โดยปราศจากอคติ",
+                    "เพื่อออกแบบสอบถามแบบปิดและแจกให้คนตอบอย่างน้อย 1,000 คน",
+                    "เพื่อหาข้อสรุปว่าเทคโนโลยีใดเหมาะสมที่สุดในการพัฒนาระบบ"
+                ],
+                optionsEn: [
+                    "To ask what users want and build exactly what they order",
+                    "To observe and understand hidden emotions, motivations, and needs without assumptions",
+                    "To send a closed-ended survey to at least 1,000 users",
+                    "To decide which technology stack is best for development"
+                ],
+                correct: 1,
+                explanationTh: "การ Empathize ไม่ใช่การทำตามคำสั่งผู้ใช้หรือแจกแบบสอบถามตื้นๆ แต่เป็นการเจาะลึกทำความเข้าใจความรู้สึก อารมณ์ และ Unmet Needs ที่ซ่อนอยู่โดยละเว้นการสมมติเอาเอง"
+            },
+            {
+                id: 2,
+                stage: "empathize",
+                stageTh: "Empathize",
+                titleTh: "หากทีมพัฒนาเดินทางไปเฝ้าสังเกตพฤติกรรมการสั่งกาแฟของผู้บริโภคที่หน้าร้าน โดยไม่เข้าไปขัดจังหวะ เทคนิคนี้เรียกว่าอะไร?",
+                titleEn: "If a team observes customer ordering behaviors at a coffee shop without interrupting, what is this method called?",
+                contextTh: "เคสศึกษา: การเก็บข้อมูลพฤติกรรมหน้าร้านจริง",
+                optionsTh: [
+                    "A/B Testing",
+                    "Shadowing / Observation (การสังเกตและติดตามพฤติกรรม)",
+                    "Roleplaying (การเล่นบทบาทสมมติ)",
+                    "Brainwriting"
+                ],
+                optionsEn: [
+                    "A/B Testing",
+                    "Shadowing / Observation",
+                    "Roleplaying",
+                    "Brainwriting"
+                ],
+                correct: 1,
+                explanationTh: "Shadowing หรือ Observation คือการเฝ้าสังเกตพฤติกรรมตามธรรมชาติของผู้ใช้ในสภาพแวดล้อมจริงโดยไม่เข้าไปรบกวน เพื่อเห็นสิ่งที่ผู้ใช้อาจไม่ได้พูดออกมา"
+            },
+            {
+                id: 3,
+                stage: "empathize",
+                stageTh: "Empathize",
+                titleTh: "ในการสัมภาษณ์ผู้ใช้ (User Interview) กรอบความคิด (Mindset) ใดที่สำคัญที่สุดที่ผู้สัมภาษณ์ควรยึดถือ?",
+                titleEn: "Which mindset is most critical when conducting a User Interview?",
+                optionsTh: [
+                    "Expert's Mind (มองตนเองเป็นผู้เชี่ยวชาญ คอยแนะนำผู้ใช้)",
+                    "Beginner's Mind (มองโลกด้วยสายตาของคนเพิ่งเริ่มเรียนรู้ ละทิ้งอคติ)",
+                    "Critical Mind (คอยจับผิดคำพูดที่ไม่สมเหตุสมผลของผู้ใช้)",
+                    "Sales Mind (พยายามนำเสนอไอเดียของทีมระหว่างสัมภาษณ์)"
+                ],
+                optionsEn: [
+                    "Expert's Mind",
+                    "Beginner's Mind",
+                    "Critical Mind",
+                    "Sales Mind"
+                ],
+                correct: 1,
+                explanationTh: "Beginner's Mind ช่วยให้เราเข้าหาผู้ใช้ด้วยความอยากรู้อยากเห็น ปราศจากความอคติหรือการตัดสินเอาเอง ทำให้ค้นพบ Insights ใหม่ๆ ได้ดีที่สุด"
+            },
+            {
+                id: 4,
+                stage: "empathize",
+                stageTh: "Empathize",
+                titleTh: "เครื่องมือ Empathy Map ช่วยสรุปข้อมูลผู้ใช้ผ่านองค์ประกอบหลักใดบ้าง?",
+                titleEn: "Empathy Map synthesizes user information through which core elements?",
+                optionsTh: [
+                    "Cost, Revenue, Profit, Margin",
+                    "Says, Thinks, Does, Feels (คำพูด ความคิด การกระทำ ความรู้สึก)",
+                    "Input, Process, Output, Outcome",
+                    "Strengths, Weaknesses, Opportunities, Threats"
+                ],
+                optionsEn: [
+                    "Cost, Revenue, Profit, Margin",
+                    "Says, Thinks, Does, Feels",
+                    "Input, Process, Output, Outcome",
+                    "Strengths, Weaknesses, Opportunities, Threats"
+                ],
+                correct: 1,
+                explanationTh: "Empathy Map แบ่งออกเป็น 4 ช่องหลัก ได้แก่ Says (คำพูด), Thinks (ความคิด), Does (การกระทำ), และ Feels (ความรู้สึก) พร้อมสรุป Pains & Gains"
+            },
+
+            // DEFINE
+            {
+                id: 5,
+                stage: "define",
+                stageTh: "Define",
+                titleTh: "ข้อใดคือองค์ประกอบที่ถูกต้องของ Point of View (POV) Framework?",
+                titleEn: "What is the correct structure of a Point of View (POV) Framework?",
+                optionsTh: [
+                    "[Problem] เกิดจาก [Cause] ทำให้เกิด [Effect]",
+                    "[User] ต้องการ [Need] เนื่องจาก [Insight]",
+                    "[Company] ต้องการ [Profit] จากการขาย [Product]",
+                    "[Feature] ช่วยแก้ [Bug] เพื่อลด [Cost]"
+                ],
+                optionsEn: [
+                    "[Problem] caused by [Cause] leading to [Effect]",
+                    "[User] needs [Need] because [Insight]",
+                    "[Company] needs [Profit] from selling [Product]",
+                    "[Feature] solves [Bug] to reduce [Cost]"
+                ],
+                correct: 1,
+                explanationTh: "POV Framework กำหนดโครงสร้างแบบเน้นมนุษย์เป็นศูนย์กลางคือ [ผู้ใช้เฉพาะกลุ่ม] + ต้องการ [ความต้องการที่แท้จริง] + เนื่องจาก [มุมมองเชิงลึกที่ค้นพบ]"
+            },
+            {
+                id: 6,
+                stage: "define",
+                stageTh: "Define",
+                titleTh: "เหตุใดเราจึงต้องเปลี่ยนประโยคปัญหาให้กลายเป็นคำถาม 'How Might We' (HMW)?",
+                titleEn: "Why do we frame problems into 'How Might We' (HMW) questions?",
+                optionsTh: [
+                    "เพื่อจำกัดให้มีคำตอบเพียงทางเดียวที่ถูกต้องที่สุด",
+                    "เพื่อแปลงข้อจำกัดของปัญหาให้กลายเป็นคำถามปลายเปิดที่กระตุ้นการคิดไอเดีย",
+                    "เพื่อกำหนดงบประมาณในการทำโครงการ",
+                    "เพื่อมอบหมายงานให้สมาชิกในทีมทำ"
+                ],
+                optionsEn: [
+                    "To limit the solution to only one correct answer",
+                    "To turn problem constraints into open-ended questions that trigger ideation",
+                    "To set the project budget",
+                    "To assign tasks to team members"
+                ],
+                correct: 1,
+                explanationTh: "คำว่า 'How' คือการสืบค้น, 'Might' บ่งบอกว่ามีได้หลายทางเลือก, และ 'We' คือการทำงานร่วมกัน เป็นการเปิดโอกาสให้คิดไอเดียแก้ปัญหาได้หลากหลาย"
+            },
+            {
+                id: 7,
+                stage: "define",
+                stageTh: "Define",
+                titleTh: "ทีมพบว่า 'พนักงานออฟฟิศอยากทานอาหารคลีน แต่ไม่มีเวลาทำเองเพราะตื่นนอนสาย' ข้อใดคือการตั้งคำถาม HMW ที่เหมาะสม?",
+                titleEn: "Team insight: 'Office workers want healthy meals but lack time to cook because they wake up late.' Which is an appropriate HMW question?",
+                contextTh: "สถานการณ์การสร้างโจทย์ปัญหา",
+                optionsTh: [
+                    "เราจะทำอย่างไรให้พนักงานออฟฟิศทุกคนตื่นเช้าขึ้น 2 ชั่วโมง?",
+                    "เราจะสร้างแอปส่งอาหารคลีนที่ใช้ AI คำนวณแคลอรีได้อย่างไร?",
+                    "เราจะทำอย่างไรให้พนักงานออฟฟิศเข้าถึงอาหารสุขภาพที่รวดเร็วในชั่วโมงเร่งด่วน?",
+                    "เราจะบังคับให้โรงอาหารออฟฟิศขายเฉพาะอาหารคลีนได้อย่างไร?"
+                ],
+                optionsEn: [
+                    "How might we make all office workers wake up 2 hours earlier?",
+                    "How might we build an AI health food delivery app?",
+                    "How might we help office workers easily access healthy meals during busy mornings?",
+                    "How might we force office cafeterias to sell only clean food?"
+                ],
+                correct: 2,
+                explanationTh: "ข้อ 3 เป็นคำถาม HMW ที่เปิดกว้างพอให้คิดทางออกได้หลากหลาย ไม่แคบเกินไป (เหมือนข้อ 2 ที่ผูกติดกับแอป) และไม่ตึงเครียดเกินไป (เหมือนข้อ 1 และ 4)"
+            },
+
+            // IDEATE
+            {
+                id: 8,
+                stage: "ideate",
+                stageTh: "Ideate",
+                titleTh: "ในระหว่างการประชุมระดมความคิด (Brainstorming) ข้อใดถือเป็นข้อห้ามที่ร้ายแรงที่สุด?",
+                titleEn: "During a Brainstorming session, which action is the strictly prohibited?",
+                optionsTh: [
+                    "การเสนอไอเดียที่ดูล้ำยุคหรือหลุดโลก",
+                    "การวิพากษ์วิจารณ์และตัดสินไอเดียของผู้อื่นทันที (Judging ideas)",
+                    "การวาดรูปประกอบลงในกระดาษ Post-it",
+                    "การคิดไอเดียออกมาจำนวนมากกว่า 50 ไอเดีย"
+                ],
+                optionsEn: [
+                    "Proposing futuristic or wild ideas",
+                    "Criticizing and judging others' ideas immediately",
+                    "Drawing sketches on Post-it notes",
+                    "Generating more than 50 ideas"
+                ],
+                correct: 1,
+                explanationTh: "กฎเหล็กของ Ideation คือ Defer Judgment (ชะลอการตัดสิน) การวิจารณ์ว่า 'ทำไม่ได้หรอก' จะทำให้บรรยากาศสะงักและทำลายความกล้าคิดสร้างสรรค์"
+            },
+            {
+                id: 9,
+                stage: "ideate",
+                stageTh: "Ideate",
+                titleTh: "เทคนิค 'Crazy Eights' มีลักษณะการทำงานอย่างไร?",
+                titleEn: "How does the 'Crazy Eights' technique work?",
+                optionsTh: [
+                    "คัดเลือกคน 8 คนมานั่งเถียงกันคนละ 8 นาที",
+                    "พับกระดาษเป็น 8 ช่อง แล้ววาด 8 ไอเดียที่แตกต่างกันในเวลา 8 นาที",
+                    "โหวตเลือกไอเดียที่ดีที่สุด 8 ไอเดียจากทั้งหมด",
+                    "ทดสอบต้นแบบกับผู้ใช้ 8 คนพร้อมกัน"
+                ],
+                optionsEn: [
+                    "8 people arguing for 8 minutes each",
+                    "Fold paper into 8 frames and sketch 8 distinct ideas in 8 minutes",
+                    "Vote for the top 8 ideas",
+                    "Test prototypes with 8 users simultaneously"
+                ],
+                correct: 1,
+                explanationTh: "Crazy Eights เป็นเทคนิคการเร่งสร้างไอเดียด่วน โดยบังคับให้แต่ละคนวาดไอเดียลงในกระดาษ 8 ช่อง ช่องละ 1 นาที เพื่อก้าวข้ามไอเดียเดิมๆ"
+            },
+            {
+                id: 10,
+                stage: "ideate",
+                stageTh: "Ideate",
+                titleTh: "หากทีมต้องการต่อยอดไอเดียของสมาชิกในทีม ควรอิสระในการใช้คำพูดแบบใด?",
+                titleEn: "To build upon a team member's idea, which phrase should be used?",
+                optionsTh: [
+                    "\"ไม่เห็นด้วย แต่ว่า...\"",
+                    "\"ไอเดียนี้แพงไป แต่ลอง...\"",
+                    "\"ใช่เลย! และถ้าเราต่อยอดโดย... (Yes, and...)\"",
+                    "\"เคยมีคนทำแล้วไม่รอดนะ...\""
+                ],
+                optionsEn: [
+                    "\"I disagree, but...\"",
+                    "\"That's too expensive, but...\"",
+                    "\"Yes, and what if we also...\"",
+                    "\"Someone already tried that and failed...\""
+                ],
+                correct: 2,
+                explanationTh: "การใช้เทคนิค 'Yes, and...' เป็นการตอบรับความคิดของผู้อื่นแล้วเสริมต่อยอดทันที ช่วยสร้างพลังบวกและขยายผลลัพธ์ของไอเดีย"
+            },
+
+            // PROTOTYPE
+            {
+                id: 11,
+                stage: "prototype",
+                stageTh: "Prototype",
+                titleTh: "แนวคิด 'Fail Fast, Learn Faster' ในขั้นตอนการสร้างต้นแบบ หมายถึงอะไร?",
+                titleEn: "What does 'Fail Fast, Learn Faster' mean in Prototyping?",
+                optionsTh: [
+                    "พยายามทำโครงการให้ล้มเหลวเพื่อนำเงินประกันภัยมาใช้",
+                    "สร้างต้นแบบแบบง่าย ราคาถูก รวดเร็ว เพื่อทดสอบข้อสมมติฐานและเรียนรู้จากข้อผิดพลาดตั้งแต่เนิ่นๆ",
+                    "รีบสร้างผลิตภัณฑ์จริงออกขายโดยไม่ต้องทดสอบ",
+                    "เลิกทำโครงการทันทีเมื่อพบอุปสรรคแรก"
+                ],
+                optionsEn: [
+                    "Intentionally failing the project to claim insurance",
+                    "Creating quick, low-cost prototypes to test assumptions and learn early from flaws",
+                    "Releasing final products immediately without testing",
+                    "Quitting the project at the first obstacle"
+                ],
+                correct: 1,
+                explanationTh: "การทำ Low-Fidelity Prototype ราคาถูกช่วยให้เราพบข้อบกพร่องและแก้ไขได้ทันท่วงทีตั้งแต่เนิ่นๆ ก่อนที่จะสูญเสียเงินและเวลาจำนวนมาก"
+            },
+            {
+                id: 12,
+                stage: "prototype",
+                stageTh: "Prototype",
+                titleTh: "กรณีศึกษา: ทีมต้องการทดสอบแนวคิดแอปสั่งซื้อของสด แต่ยังไม่อยากเขียนโค้ด ทีมจึงใช้วิธีวาดหน้าจอลงกระดาษแล้วให้ผู้ใช้นิ้วแตะเพื่อเปลี่ยนแผ่นกระดาษ วิธีนี้เรียกว่าอะไร?",
+                titleEn: "Case: A team wants to test a grocery app idea without coding, so they sketch screens on paper and swap them as the user taps. What is this?",
+                contextTh: "การสร้างต้นแบบแอปพลิเคชันอย่างรวดเร็ว",
+                optionsTh: [
+                    "High-Fidelity Interactive App",
+                    "Paper Prototype (ต้นแบบกระดาษ)",
+                    "3D CAD Simulation",
+                    "A/B Deployment"
+                ],
+                optionsEn: [
+                    "High-Fidelity Interactive App",
+                    "Paper Prototype",
+                    "3D CAD Simulation",
+                    "A/B Deployment"
+                ],
+                correct: 1,
+                explanationTh: "Paper Prototyping คือตัวอย่างคลาสสิกของ Low-Fidelity Prototype ที่ประหยัดเวลาและทรงพลังในการทดสอบ User Flow และความเข้าใจเบื้องต้น"
+            },
+            {
+                id: 13,
+                stage: "prototype",
+                stageTh: "Prototype",
+                titleTh: "ข้อใด **ไม่ใช่** วัตถุประสงค์ของการสร้าง Prototype?",
+                titleEn: "Which is **NOT** a main objective of creating a Prototype?",
+                optionsTh: [
+                    "เพื่อทดสอบสมมติฐาน (Test Assumptions)",
+                    "เพื่อสื่อสารแนวคิดให้ทีมและผู้ใช้เห็นภาพตรงกัน",
+                    "เพื่อสร้างชิ้นงานที่สมบูรณ์แบบพร้อมขายจริงในตลาด",
+                    "เพื่อเรียนรู้พฤติกรรมผู้ใช้เพิ่มเติม"
+                ],
+                optionsEn: [
+                    "To test assumptions",
+                    "To communicate ideas visually to stakeholders",
+                    "To build a flawless, market-ready final product",
+                    "To gain deeper user insights"
+                ],
+                correct: 2,
+                explanationTh: "Prototype มีไว้เพื่อเรียนรู้และทดสอบ ไม่ใช่ชิ้นงานที่สมบูรณ์แบบพร้อมขาย (Final Product) หากมุ่งสร้างความสมบูรณ์แบบจะเสียเวลาและต้นทุนสูงเกินไป"
+            },
+
+            // TEST
+            {
+                id: 14,
+                stage: "test",
+                stageTh: "Test",
+                titleTh: "หลักการ 'Show, Don't Tell' ในการนำต้นแบบไปทดสอบกับผู้ใช้ หมายความว่าอย่างไร?",
+                titleEn: "What does 'Show, Don't Tell' mean during User Testing?",
+                optionsTh: [
+                    "พูดอธิบายการทำงานของต้นแบบให้ผู้ใช้ฟังอย่างละเอียดตั้งแต่ต้นจนจบ",
+                    "ยื่นต้นแบบให้ผู้ใช้ลองสัมผัสและใช้งานเอง โดยสังเกตพฤติกรรมแทนการบอกนำทาง",
+                    "ทำวิดีโอโฆษณาฉายให้ผู้ใช้ดูโดยไม่ต้องจับของจริง",
+                    "ขายผลิตภัณฑ์ให้ผู้ใช้ทันที"
+                ],
+                optionsEn: [
+                    "Explain every detail of how the prototype works verbally",
+                    "Put the prototype in the user's hands and observe their organic interactions without guiding them",
+                    "Show a promo video without giving them the physical object",
+                    "Sell the product to the user immediately"
+                ],
+                correct: 1,
+                explanationTh: "Show, Don't Tell คือการเปิดโอกาสให้ผู้ใช้ได้สัมผัสและลองใช้งานด้วยตนเอง เพื่อดูว่าผู้ใช้เข้าใจระบบตามสัญชาตญาณหรือไม่ โดยผู้นำทดสอบไม่ไปพูดชี้แนะ"
+            },
+            {
+                id: 15,
+                stage: "test",
+                stageTh: "Test",
+                titleTh: "ตาราง Feedback Capture Grid แบ่งการรวบรวมฟีดแบ็กออกเป็น 4 ช่อง ได้แก่อะไรบ้าง?",
+                titleEn: "What are the 4 quadrants of a Feedback Capture Grid?",
+                optionsTh: [
+                    "Likes (สิ่งที่ชอบ), Wishes (สิ่งที่อยากให้ปรับปรุง), Questions (ข้อสงสัย), Ideas (ไอเดียใหม่)",
+                    "Who, What, Where, When",
+                    "Strengths, Weaknesses, Opportunities, Threats",
+                    "Plan, Do, Check, Act"
+                ],
+                optionsEn: [
+                    "Likes (+), Wishes (-/Delta), Questions (?), Ideas (!)",
+                    "Who, What, Where, When",
+                    "Strengths, Weaknesses, Opportunities, Threats",
+                    "Plan, Do, Check, Act"
+                ],
+                correct: 0,
+                explanationTh: "Feedback Capture Grid แบ่งเป็น 4 ช่องสัญลักษณ์: Likes (+ สิ่งที่ชอบ), Wishes (สิ่งอยากให้มี/แก้), Questions (? คำถามที่เกิดขึ้น), และ Ideas (! ไอเดียต่อยอด)"
+            },
+            {
+                id: 16,
+                stage: "test",
+                stageTh: "Test",
+                titleTh: "หากผลการทดสอบ (Test) พบว่าผู้ใช้ไม่เข้าใจวิธีใช้งานต้นแบบอย่างสิ้นเชิง และปัญหาจริงไม่ใช่สิ่งที่ทีมคิดไว้ ทีมควรทำอย่างไร?",
+                titleEn: "If testing reveals users completely misunderstand the prototype and the problem was wrong, what should the team do?",
+                optionsTh: [
+                    "ยกเลิกโครงการและลงโทษทีมงาน",
+                    "ฝืนเปิดตัวผลิตภัณฑ์ต่อไปเพราะลงทุนทำไปแล้ว",
+                    "วนซ้ำ (Iterate) กลับไปทำความเข้าใจผู้ใช้ใหม่ (Empathize) หรือนิยามปัญหาใหม่ (Define)",
+                    "ปรับเฉพาะสีและฟอนต์ของต้นแบบให้สวยงามขึ้น"
+                ],
+                optionsEn: [
+                    "Cancel the project and punish the team",
+                    "Force launch the product anyway due to sunk costs",
+                    "Iterate back to Empathize or Define stages based on new learnings",
+                    "Only change colors and fonts to look prettier"
+                ],
+                correct: 2,
+                explanationTh: "Design Thinking เป็น Non-linear / Iterative process การนำผลลัพธ์จากการ Test กลับไปปรับ Empathize หรือ Define ถือเป็นเรื่องปกติและเป็นหัวใจสำคัญของการเรียนรู้"
+            },
+
+            // CORE MINDSET & INTEGRATED SCENARIOS
+            {
+                id: 17,
+                stage: "core",
+                stageTh: "Core Concepts",
+                titleTh: "Design Thinking เน้นสร้างสมดุลความสำเร็จของนวัตกรรมผ่าน 3 ปัจจัยหลัก (3 Lenses of Innovation) ข้อใดถูกต้อง?",
+                titleEn: "Design Thinking balances innovation success through which 3 lenses?",
+                optionsTh: [
+                    "Speed, Quality, Price",
+                    "Desirability (ความต้องการของผู้ใช้), Feasibility (ความเป็นไปได้ทางเทคโนโลยี), Viability (ความคุ้มค่าทางธุรกิจ)",
+                    "Marketing, Sales, Accounting",
+                    "Hardware, Software, Peopleware"
+                ],
+                optionsEn: [
+                    "Speed, Quality, Price",
+                    "Desirability, Feasibility, Viability",
+                    "Marketing, Sales, Accounting",
+                    "Hardware, Software, Peopleware"
+                ],
+                correct: 1,
+                explanationTh: "นวัตกรรมที่ยั่งยืนต้องอยู่ตรงจุดตัดระหว่าง Desirability (ผู้ใช้ต้องการ), Feasibility (สร้างได้จริงทางเทคโนโลยี), และ Viability (เลี้ยงตัวเองได้ทางธุรกิจ)"
+            },
+            {
+                id: 18,
+                stage: "core",
+                stageTh: "Core Concepts",
+                titleTh: "ข้อใดอธิบายลักษณะกระบวนการทำงานของ Design Thinking ได้ถูกต้องที่สุด?",
+                titleEn: "Which best describes the nature of the Design Thinking process?",
+                optionsTh: [
+                    "เป็นเส้นตรงทำตามลำดับขั้น 1 ถึง 5 แล้วจบ ห้ามย้อนกลับ (Linear Process)",
+                    "เป็นกระบวนการวนซ้ำ (Non-linear & Iterative Process) ที่สามารถย้อนกลับไปมาตามการเรียนรู้ได้",
+                    "เป็นทฤษฎีทางคณิตศาสตร์ที่มีสูตรคำนวณตายตัว",
+                    "เป็นเครื่องมือที่ใช้เฉพาะนักออกแบบกราฟิกเท่านั้น"
+                ],
+                optionsEn: [
+                    "Linear process that must move strict from step 1 to 5",
+                    "Non-linear and iterative process that loops back based on insights learned",
+                    "Mathematical theory with fixed formulas",
+                    "Tool reserved exclusively for graphic designers"
+                ],
+                correct: 1,
+                explanationTh: "Design Thinking ไม่ใช่เส้นตรงแบบ Waterfall แต่เป็นกระบวนการยืดหยุ่นที่วนซ้ำได้ตลอดเวลาเพื่อปรับปรุงผลลัพธ์ตามฟีดแบ็กจริง"
+            }
+        ];
+
+        // Exam Runtime States
+        let examMode = 'mock'; // 'mock' or 'drill'
+        let currentDrillStage = 'all';
+        let activeQuestions = [];
+        let currentQuestionIdx = 0;
+        let userAnswers = {}; // { qId: optionIndex }
+        let examTimerInterval = null;
+        let examTimeRemaining = 1200; // 20 mins in seconds
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            switchStage(1);
+            renderToolsGrid(toolsData);
+            generateHMW();
+            lucide.createIcons();
+
+            // Setup Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                filterAllContent(query);
+            });
+        });
+
+        // App Navigation Switcher (Guide / Tools / Exam)
+        function switchAppTab(tabName) {
+            activeAppTab = tabName;
+            
+            // Hide all views
+            document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+            
+            // Unselect all navbar buttons
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'dark:text-slate-400');
+            });
+
+            // Show target view & highlight nav
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            const activeNavBtn = document.getElementById(`nav-${tabName}`);
+            if (activeNavBtn) {
+                activeNavBtn.classList.add('bg-white', 'dark:bg-slate-700', 'text-sky-600', 'dark:text-sky-400', 'shadow-sm');
+                activeNavBtn.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
+
+            // Hide search input if in exam mode
+            const searchWrapper = document.getElementById('searchWrapper');
+            if (tabName === 'exam') {
+                searchWrapper.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                searchWrapper.classList.remove('opacity-0', 'pointer-events-none');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // Language Switcher
+        function setLanguage(lang) {
+            currentLang = lang;
+            const thElems = document.querySelectorAll('.lang-th');
+            const enElems = document.querySelectorAll('.lang-en');
+
+            if (lang === 'th') {
+                thElems.forEach(el => el.classList.remove('hidden'));
+                enElems.forEach(el => el.classList.add('hidden'));
+            } else if (lang === 'en') {
+                thElems.forEach(el => el.classList.add('hidden'));
+                enElems.forEach(el => el.classList.remove('hidden'));
+            } else {
+                thElems.forEach(el => el.classList.remove('hidden'));
+                enElems.forEach(el => el.classList.remove('hidden'));
+            }
+        }
+
+        // --- STAGES & TOOLS LOGIC ---
+        const stagesData = {
+            1: {
+                nameTh: "1. Empathize (ทำความเข้าใจผู้ใช้อย่างลึกซึ้ง)",
+                nameEn: "Stage 1: Empathize",
+                icon: "heart",
+                color: "rose",
+                descTh: "หัวใจสำคัญของ Design Thinking คือการเอาตัวเองเข้าไปอยู่ในจุดของผู้ใช้งาน เพื่อทำความเข้าใจบริบท ปัญหา ความต้องการ และอารมณ์ความรู้สึกที่แท้จริง โดยปราศจากอคติ",
+                descEn: "Gain a deep understanding of users in the context of their lives through observation, engagement, and immersion without assumptions.",
+                goals: [
+                    "สังเกตพฤติกรรมจริงในสภาพแวดล้อมจริงของผู้ใช้ (Observe)",
+                    "ปฏิสัมพันธ์และสัมภาษณ์แบบเปิดกว้าง (Engage / Interview)",
+                    "สัมผัสประสบการณ์จริงด้วยตนเอง (Immerse)"
+                ],
+                mindset: "Empathy & Beginner's Mind (เปิดใจ ไร้อคติ มองโลกด้วยสายตาของคนเพิ่งเริ่มเรียนรู้)",
+                tools: ["User Interview", "Shadowing", "Empathy Map", "User Journey Mapping", "Persona Creation"],
+                tips: "อย่ารีบสรุปวิธีแก้ปัญหา ให้ตั้งคำถามด้วย 'ทำไม' (Why?) ซ้ำๆ เพื่อเจาะลึกถึงสาเหตุที่แท้จริง"
+            },
+            2: {
+                nameTh: "2. Define (ระบุและกรอบปัญหาให้ชัดเจน)",
+                nameEn: "Stage 2: Define",
+                icon: "target",
+                color: "amber",
+                descTh: "นำข้อมูลกระจัดกระจายที่ได้จากขั้น Empathize มาสังเคราะห์ (Synthesize) เพื่อระบุว่า 'ปัญหาที่แท้จริงคืออะไร' และสร้างกรอบปัญหาที่โฟกัสผู้ใช้เป็นหลัก (Human-Centered Problem Statement)",
+                descEn: "Unpack empathy findings into clear needs and insights to craft an actionable problem statement or Point of View (POV).",
+                goals: [
+                    "คัดกรองและจัดหมวดหมู่ข้อมูล insight ที่สำคัญ",
+                    "กำหนด Point of View (POV) Framework: [User] ต้องการ [Need] เพราะว่า [Insight]",
+                    "แปลงปัญหาให้กลายเป็นคำถามเปิดด้วย 'How Might We' (HMW)"
+                ],
+                mindset: "Clarity & Focus (ตกผลึกให้ชัดเจน และเลือกแก้ปัญหาที่มีอิมแพกต์ที่สุด)",
+                tools: ["Point of View (POV) Framework", "How Might We (HMW) Statements", "Affinity Diagram", "5 Whys Analysis"],
+                tips: "นิยามปัญหาให้อยู่ในระดับที่กว้างพอให้คิดไอเดียได้หลากหลาย แต่แคบพอที่จะวัดผลปฏิบัติจริงได้"
+            },
+            3: {
+                nameTh: "3. Ideate (ระดมความคิดและสร้างทางออก)",
+                nameEn: "Stage 3: Ideate",
+                icon: "lightbulb",
+                color: "emerald",
+                descTh: "เน้นการคิดปริมาณไอเดียให้มากที่สุด (Quantity over Quality) เปิดกว้างคิดนอกกรอบ และต่อยอดไอเดียจากผู้อื่นโดยไม่มีการตัดสินหรือดิสเครดิตในระหว่างการเสนอไอเดีย",
+                descEn: "Transition from identifying problems to exploring a wide, diverse solution space ('going wide' / flaring).",
+                goals: [
+                    "แตกไอเดียออกมาให้หลากหลายที่สุด (Divergent Thinking)",
+                    "สร้างบรรยากาศที่ทุกคนกล้าเสนอแนวคิดแปลกใหม่",
+                    "คัดเลือกและจัดกลุ่มไอเดียเด่นเพื่อนำไปสร้างต้นแบบ (Convergent Thinking)"
+                ],
+                mindset: "Defer Judgment & Go Wild (อย่าเพิ่งตัดสินความคิด และกล้าคิดไอเดียสุดบ้าคลั่ง)",
+                tools: ["Brainstorming Rules", "Brainwriting (6-3-5)", "Crazy Eights", "SCAMPER", "Dot Voting"],
+                tips: "ใช้วิธี 'Yes, and...' ในการต่อยอดไอเดียเพื่อน แทนการพูดว่า 'No, but...'"
+            },
+            4: {
+                nameTh: "4. Prototype (สร้างต้นแบบที่จับต้องได้)",
+                nameEn: "Stage 4: Prototype",
+                icon: "hammer",
+                color: "sky",
+                descTh: "แปลงไอเดียจากกระดาษให้กลายเป็นวัตถุหรือระบบที่สัมผัสและทดสอบได้จริงอย่างรวดเร็ว โดยใช้ต้นทุนต่ำที่สุด (Low-Fidelity) เพื่อเรียนรู้และล้มเหลวให้ไวที่สุด",
+                descEn: "Transform abstract ideas into physical or interactive forms to learn quickly, test assumptions, and deepen empathy.",
+                goals: [
+                    "สร้างต้นแบบแบบรวดเร็ว (Rapid Prototyping)",
+                    "ทดสอบสมมติฐานเฉพาะเรื่อง (Test Assumptions)",
+                    "ให้ผู้ใช้ได้โต้ตอบและส่งฟีดแบ็กจริง"
+                ],
+                mindset: "Fail Fast, Learn Faster & Think with Your Hands (ล้มเหลวให้ไวเพื่อเรียนรู้ และคิดผ่านการลงมือทำ)",
+                tools: ["Paper Prototype", "Wireframing", "Storyboarding", "Roleplaying / Service Staging", "3D Cardboard Mockup"],
+                tips: "อย่าหลงรักต้นแบบของตัวเองจนไม่กล้าแก้ไข เพราะเป้าหมายคือการรับฟีดแบ็กเพื่อปรับปรุง"
+            },
+            5: {
+                nameTh: "5. Test (ทดสอบและรับฟังข้อเสนอแนะ)",
+                nameEn: "Stage 5: Test",
+                icon: "flask-conical",
+                color: "purple",
+                descTh: "นำต้นแบบไปให้กลุ่มเป้าหมายทดลองใช้งานจริง สังเกตปฏิกิริยา รับฟังคำติชม และเรียนรู้เพื่อนำกลับไปปรับปรุงไอเดีย หรือแม้นิยามปัญหาใหม่หากจำเป็น",
+                descEn: "Place low-fidelity prototypes into the user's hands to gather feedback, refine solutions, and iterate on understanding.",
+                goals: [
+                    "สังเกตวิธีที่ผู้ใช้ปฏิสัมพันธ์กับต้นแบบโดยไม่ชี้นำ",
+                    "เก็บข้อเสนอแนะทั้งจุดชอบ จุดไม่ชอบ และข้อสงสัย",
+                    "วนซ้ำ (Iterate) กลับไปพัฒนาต้นแบบหรือขั้นตอนก่อนหน้า"
+                ],
+                mindset: "Show, Don't Tell & Learning Mindset (เปิดรับฟังความจริง และมองข้อผิดพลาดเป็นโอกาสเรียนรู้)",
+                tools: ["User Testing", "Feedback Capture Grid", "A/B Testing", "Observation Protocol"],
+                tips: "ให้ผู้ใช้ทดลองทำด้วยตัวเอง 'แสดงให้ดู อย่าแค่อธิบาย' (Show, Don't Tell)"
+            }
+        };
+
+        const toolsData = [
+            { id: 1, category: "empathize", name: "User Interview", nameTh: "การสัมภาษณ์ผู้ใช้เชิงลึก", desc: "การพูดคุยแบบเปิดกว้างโดยเน้นการฟังและถามคำถาม 'ทำไม' เพื่อเจาะลึกอารมณ์และแรงจูงใจของผู้ใช้", icon: "message-circle" },
+            { id: 2, category: "empathize", name: "Empathy Map", nameTh: "แผนผังความเข้าใจผู้ใช้", desc: "ตาราง 4 ช่อง รวบรวมคำพูด (Says), ความคิด (Thinks), การกระทำ (Does), และความรู้สึก (Feels)", icon: "layout-grid" },
+            { id: 3, category: "empathize", name: "Shadowing / Observation", nameTh: "การสังเกตและติดตามพฤติกรรม", desc: "การเฝ้าสังเกตผู้ใช้ในสภาพแวดล้อมจริงโดยไม่ขัดจังหวะ เพื่อเห็นพฤติกรรมธรรมชาติที่เจ้าตัวอาจไม่รู้ตัว", icon: "eye" },
+            { id: 4, category: "define", name: "POV Framework", nameTh: "กรอบกำหนดมุมมองปัญหา", desc: "การสรุปประโยค: [User] ต้องการ [Need] เพราะว่า [Insight] เพื่อสร้างจุดโฟกัสที่ชัดเจน", icon: "crosshair" },
+            { id: 5, category: "define", name: "How Might We (HMW)", nameTh: "ตั้งคำถาม 'เราจะทำอย่างไรให้...'", desc: "การแปลงข้อจำกัดของปัญหาให้กลายเป็นคำถามปลายเปิดที่กระตุ้นให้เกิดการคิดไอเดียแก้ปัญหา", icon: "help-circle" },
+            { id: 6, category: "ideate", name: "Crazy Eights", nameTh: "เทคนิคพับกระดาษ 8 ช่อง", desc: "วาดไอเดียต่างกัน 8 ไอเดียในเวลาเพียง 8 นาที (ช่องละ 1 นาที) เพื่อเร่งให้คิดไอเดียรวดเร็ว", icon: "grid" },
+            { id: 7, category: "ideate", name: "SCAMPER", nameTh: "เทคนิคดัดแปลงไอเดีย", desc: "Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse เพื่อคิดมุมมองใหม่", icon: "shuffle" },
+            { id: 8, category: "ideate", name: "Dot Voting", nameTh: "การโหวตด้วยสติ๊กเกอร์แปะจุด", desc: "ให้สมาชิกแต่ละคนมีโควตาสติ๊กเกอร์แปะจุดโหวตไอเดียที่ชื่นชอบที่สุด เพื่อคัดเลือกอย่างรวดเร็ว", icon: "check-circle" },
+            { id: 9, category: "prototype", name: "Paper Prototyping", nameTh: "ต้นแบบกระดาษ", desc: "วาดอินเทอร์เฟซหรือขั้นตอนลงกระดาษเพื่อทดสอบขั้นตอนการทำงานเบื้องต้นอย่างรวดเร็ว", icon: "file-text" },
+            { id: 10, category: "prototype", name: "Storyboarding", nameTh: "การเขียนเรื่องราวแบบการ์ตูน", desc: "วาดภาพแสดงลำดับเหตุการณ์การใช้งานผลิตภัณฑ์ของผู้ใช้ตั้งแต่ต้นจนจบ", icon: "film" },
+            { id: 11, category: "test", name: "Feedback Capture Grid", nameTh: "ตารางเก็บฟีดแบ็ก 4 ช่อง", desc: "ตารางแบ่งเป็น Likes (สิ่งที่ชอบ), Wishes (สิ่งที่อยากให้มี), Questions (ข้อสงสัย), Ideas (ไอเดียใหม่)", icon: "columns" },
+            { id: 12, category: "test", name: "A/B Testing", nameTh: "การทดสอบเปรียบเทียบ 2 แบบ", desc: "สร้างต้นแบบ 2 รูปแบบที่มีจุดต่างกัน 1 จุด เพื่อทดสอบดูว่าผู้ใช้ชอบหรือทำงานได้ดีกับแบบใดมากกว่า", icon: "git-compare" }
+        ];
+
+        function switchStage(stageNum) {
+            currentStage = stageNum;
+            const data = stagesData[stageNum];
+
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.getElementById(`stage-btn-${i}`);
+                if (i === stageNum) {
+                    btn.classList.add('ring-2', 'ring-sky-500', 'bg-sky-50/50', 'dark:bg-sky-950/30');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-sky-500', 'bg-sky-50/50', 'dark:bg-sky-950/30');
+                }
+            }
+
+            const contentDiv = document.getElementById('stageContent');
+            contentDiv.innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 rounded-2xl bg-${data.color}-100 dark:bg-${data.color}-950/50 text-${data.color}-600 dark:text-${data.color}-400">
+                            <i data-lucide="${data.icon}" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-bold">
+                                <span class="lang-th">${data.nameTh}</span>
+                                <span class="lang-en block text-base text-slate-500">${data.nameEn}</span>
+                            </h3>
+                        </div>
+                    </div>
+
+                    <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
+                        <span class="lang-th">${data.descTh}</span>
+                        <span class="lang-en block mt-1">${data.descEn}</span>
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60 space-y-3">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i> Goals (เป้าหมายสำคัญ)
+                            </h4>
+                            <ul class="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 list-disc list-inside">
+                                ${data.goals.map(g => `<li>${g}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-700/60 space-y-3">
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <i data-lucide="brain" class="w-4 h-4 text-indigo-500"></i> Mindset
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">${data.mindset}</p>
+
+                            <h4 class="font-bold text-sm text-slate-800 dark:text-slate-200 flex items-center gap-2 pt-2">
+                                <i data-lucide="wrench" class="w-4 h-4 text-amber-500"></i> Tools & Techniques
+                            </h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                ${data.tools.map(t => `<span class="px-2.5 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs sm:text-sm text-amber-800 dark:text-amber-300 flex items-start gap-3">
+                        <i data-lucide="lightbulb" class="w-5 h-5 text-amber-500 shrink-0 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold">Pro-Tip:</span> ${data.tips}
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            setLanguage(currentLang);
+        }
+
+        function renderToolsGrid(tools) {
+            const grid = document.getElementById('toolsGrid');
+            if (tools.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-sm text-slate-400 py-8">ไม่พบเครื่องมือที่ตรงกับคำค้นหา</p>`;
+                return;
+            }
+            grid.innerHTML = tools.map(t => `
+                <div class="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all space-y-3 flex flex-col justify-between">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">${t.category}</span>
+                            <i data-lucide="${t.icon}" class="w-5 h-5 text-indigo-500"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 dark:text-slate-100">${t.name}</h4>
+                        <p class="text-xs font-medium text-slate-500 dark:text-slate-400">${t.nameTh}</p>
+                        <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${t.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function filterToolCategory(cat) {
+            const btns = document.querySelectorAll('.tool-cat-btn');
+            btns.forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-slate-100', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
+            });
+            event.target.classList.add('bg-indigo-600', 'text-white');
+            event.target.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'text-slate-600', 'dark:text-slate-300');
+
+            if (cat === 'all') {
+                renderToolsGrid(toolsData);
+            } else {
+                renderToolsGrid(toolsData.filter(t => t.category === cat));
+            }
+        }
+
+        function clearEmpathyMap() {
+            ['empathysays', 'empathythinks', 'empathydoes', 'empathyfeels', 'empathypains', 'empathygains'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+        }
+
+        function generateHMW() {
+            const user = document.getElementById('hmwUser').value.trim() || '[ผู้ใช้/User]';
+            const need = document.getElementById('hmwNeed').value.trim() || '[ความต้องการ/Need]';
+            const insight = document.getElementById('hmwInsight').value.trim() || '[เหตุผลลึกซึ้ง/Insight]';
+            document.getElementById('hmwResult').innerText = `"เราจะทำอย่างไรให้ ${user} สามารถ ${need} ได้ เนื่องจาก ${insight}?"`;
+        }
+
+        function copyHMW() {
+            const text = document.getElementById('hmwResult').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            alert('คัดลอกประโยค HMW เรียบร้อยแล้ว!');
+        }
+
+        function filterAllContent(query) {
+            if (!query) {
+                renderToolsGrid(toolsData);
+                return;
+            }
+            renderToolsGrid(toolsData.filter(t => 
+                t.name.toLowerCase().includes(query) ||
+                t.nameTh.toLowerCase().includes(query) ||
+                t.desc.toLowerCase().includes(query) ||
+                t.category.toLowerCase().includes(query)
+            ));
+        }
+
+        // --- EXAM SIMULATOR LOGIC ---
+        function setExamMode(mode) {
+            examMode = mode;
+            const mockBtn = document.getElementById('mode-btn-mock');
+            const drillBtn = document.getElementById('mode-btn-drill');
+            const drillSection = document.getElementById('drillCategorySection');
+
+            if (mode === 'mock') {
+                mockBtn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm";
+                drillBtn.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                drillSection.classList.add('hidden');
+            } else {
+                drillBtn.className = "px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm";
+                mockBtn.className = "px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white";
+                drillSection.classList.remove('hidden');
+            }
+        }
+
+        function filterDrillStage(stage) {
+            currentDrillStage = stage;
+            const btns = document.querySelectorAll('.drill-stage-btn');
+            btns.forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-slate-100', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-300');
+            });
+            event.target.classList.add('bg-indigo-600', 'text-white');
+            event.target.classList.remove('bg-slate-100', 'dark:bg-slate-700', 'text-slate-700', 'dark:text-slate-300');
+        }
+
+        function startExamSession() {
+            // Prepare Active Questions
+            if (examMode === 'mock' || currentDrillStage === 'all') {
+                activeQuestions = [...examQuestionsBank];
+            } else {
+                activeQuestions = examQuestionsBank.filter(q => q.stage === currentDrillStage);
+            }
+
+            if (activeQuestions.length === 0) {
+                alert('ไม่พบข้อสอบในหมวดหมู่นี้');
+                return;
+            }
+
+            userAnswers = {};
+            currentQuestionIdx = 0;
+
+            // UI visibility
+            document.getElementById('examStartPanel').classList.add('hidden');
+            document.getElementById('examResultPanel').classList.add('hidden');
+            document.getElementById('activeExamPanel').classList.remove('hidden');
+
+            // Timer Setup
+            const isTimer = document.getElementById('timerToggle').checked && examMode === 'mock';
+            const timerDisplay = document.getElementById('examTimerDisplay');
+            if (isTimer) {
+                timerDisplay.classList.remove('hidden');
+                examTimeRemaining = 1200; // 20 mins
+                updateTimerText();
+                clearInterval(examTimerInterval);
+                examTimerInterval = setInterval(() => {
+                    examTimeRemaining--;
+                    updateTimerText();
+                    if (examTimeRemaining <= 0) {
+                        clearInterval(examTimerInterval);
+                        alert('หมดเวลาการทำข้อสอบ! ระบบจะทำการส่งข้อสอบโดยอุดมสมบูรณ์');
+                        submitExam();
+                    }
+                }, 1000);
+            } else {
+                timerDisplay.classList.add('hidden');
+            }
+
+            renderQuestionNavigator();
+            renderActiveQuestion();
+        }
+
+        function updateTimerText() {
+            const mins = Math.floor(examTimeRemaining / 60);
+            const secs = examTimeRemaining % 60;
+            document.getElementById('timerCountdown').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderQuestionNavigator() {
+            const grid = document.getElementById('questionNavGrid');
+            grid.innerHTML = activeQuestions.map((q, idx) => {
+                const isAnswered = userAnswers[q.id] !== undefined;
+                let bgClass = isAnswered 
+                    ? 'bg-indigo-600 text-white font-bold' 
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200';
+                if (idx === currentQuestionIdx) {
+                    bgClass += ' ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-slate-800';
+                }
+                return `
+                    <button onclick="jumpToQuestion(${idx})" class="w-8 h-8 rounded-lg text-xs transition-all flex items-center justify-center ${bgClass}">
+                        ${idx + 1}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function jumpToQuestion(idx) {
+            currentQuestionIdx = idx;
+            renderQuestionNavigator();
+            renderActiveQuestion();
+        }
+
+        function renderActiveQuestion() {
+            const q = activeQuestions[currentQuestionIdx];
+            document.getElementById('examProgressBadge').innerText = `ข้อที่ ${currentQuestionIdx + 1} / ${activeQuestions.length}`;
+            document.getElementById('examStageBadge').innerText = `STAGE: ${q.stageTh.toUpperCase()}`;
+
+            // Title & Context
+            document.getElementById('questionTitle').innerHTML = `
+                <span class="lang-th">${q.titleTh}</span>
+                <span class="lang-en block text-sm font-normal text-slate-500 mt-1">${q.titleEn}</span>
+            `;
+
+            const ctxEl = document.getElementById('questionContext');
+            if (q.contextTh) {
+                ctxEl.classList.remove('hidden');
+                ctxEl.innerText = `💡 ${q.contextTh}`;
+            } else {
+                ctxEl.classList.add('hidden');
+            }
+
+            // Options
+            const container = document.getElementById('optionsContainer');
+            const selectedOpt = userAnswers[q.id];
+
+            container.innerHTML = q.optionsTh.map((optTh, oIdx) => {
+                const optEn = q.optionsEn[oIdx];
+                const isSelected = selectedOpt === oIdx;
+                let cardStyle = "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-400";
+                
+                if (isSelected) {
+                    cardStyle = "border-indigo-600 dark:border-indigo-500 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 font-semibold shadow-sm";
+                }
+
+                return `
+                    <button onclick="selectOption(${q.id}, ${oIdx})" class="w-full text-left p-4 rounded-xl border text-xs sm:text-sm transition-all flex items-start gap-3 ${cardStyle}">
+                        <span class="w-6 h-6 rounded-full border border-slate-300 dark:border-slate-600 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${isSelected ? 'bg-indigo-600 text-white border-indigo-600' : ''}">
+                            ${String.fromCharCode(65 + oIdx)}
+                        </span>
+                        <div>
+                            <span class="lang-th">${optTh}</span>
+                            <span class="lang-en block text-xs font-normal text-slate-400 mt-0.5">${optEn}</span>
+                        </div>
+                    </button>
+                `;
+            }).join('');
+
+            // Drill Mode Immediate Feedback Box
+            const feedbackBox = document.getElementById('drillFeedbackBox');
+            if (examMode === 'drill' && selectedOpt !== undefined) {
+                feedbackBox.classList.remove('hidden');
+                const isCorrect = selectedOpt === q.correct;
+                if (isCorrect) {
+                    feedbackBox.className = "p-4 rounded-xl text-xs sm:text-sm space-y-1 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800";
+                    feedbackBox.innerHTML = `<strong>✅ ถูกต้อง!</strong> ${q.explanationTh}`;
+                } else {
+                    feedbackBox.className = "p-4 rounded-xl text-xs sm:text-sm space-y-1 bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-200 border border-rose-200 dark:border-rose-800";
+                    feedbackBox.innerHTML = `<strong>❌ ยังไม่ถูกต้อง (เฉลยข้อ ${String.fromCharCode(65 + q.correct)})</strong><br>${q.explanationTh}`;
+                }
+            } else {
+                feedbackBox.classList.add('hidden');
+            }
+
+            // Buttons state
+            document.getElementById('prevQBtn').disabled = currentQuestionIdx === 0;
+            const nextBtn = document.getElementById('nextQBtn');
+            if (currentQuestionIdx === activeQuestions.length - 1) {
+                nextBtn.innerHTML = `ตรวจข้อสอบ <i data-lucide="check-circle" class="w-4 h-4"></i>`;
+                nextBtn.onclick = submitExam;
+            } else {
+                nextBtn.innerHTML = `ข้อถัดไป <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                nextBtn.onclick = () => navigateQuestion(1);
+            }
+
+            lucide.createIcons();
+            setLanguage(currentLang);
+        }
+
+        function selectOption(qId, oIdx) {
+            userAnswers[qId] = oIdx;
+            renderQuestionNavigator();
+            renderActiveQuestion();
+        }
+
+        function navigateQuestion(step) {
+            const nextIdx = currentQuestionIdx + step;
+            if (nextIdx >= 0 && nextIdx < activeQuestions.length) {
+                currentQuestionIdx = nextIdx;
+                renderQuestionNavigator();
+                renderActiveQuestion();
+            }
+        }
+
+        function submitExam() {
+            clearInterval(examTimerInterval);
+
+            // Calculate Score
+            let correctCount = 0;
+            const stageScores = { empathize: { total: 0, score: 0 }, define: { total: 0, score: 0 }, ideate: { total: 0, score: 0 }, prototype: { total: 0, score: 0 }, test: { total: 0, score: 0 }, core: { total: 0, score: 0 } };
+
+            activeQuestions.forEach(q => {
+                const userAns = userAnswers[q.id];
+                const stg = q.stage;
+                stageScores[stg].total++;
+
+                if (userAns === q.correct) {
+                    correctCount++;
+                    stageScores[stg].score++;
+                }
+            });
+
+            const totalQ = activeQuestions.length;
+            const percentage = Math.round((correctCount / totalQ) * 100);
+
+            // Hide exam active panel, show result
+            document.getElementById('activeExamPanel').classList.add('hidden');
+            document.getElementById('examResultPanel').classList.remove('hidden');
+
+            // Render Result Card
+            document.getElementById('resultScoreText').innerText = `${correctCount}/${totalQ}`;
+            document.getElementById('resultPercentText').innerText = `${percentage}%`;
+
+            const titleEl = document.getElementById('resultGradeTitle');
+            const msgEl = document.getElementById('resultSubMessage');
+
+            if (percentage >= 80) {
+                titleEl.innerText = "🏆 ยอดเยี่ยม! ผ่านการทดสอบระดับสูง (Mastered)";
+                msgEl.innerText = "คุณมีความเข้าใจในกระบวนการ Design Thinking อย่างลึกซึ้ง สามารถนำไปประยุกต์ใช้จริงได้ยอดเยี่ยม";
+            } else if (percentage >= 60) {
+                titleEl.innerText = "✅ ผ่านการทดสอบ (Passed)";
+                msgEl.innerText = "คุณมีความรู้พื้นฐานและหลักการสำคัญของ Design Thinking อยู่ในเกณฑ์ดี";
+            } else {
+                titleEl.innerText = "📖 ควรทบทวนเนื้อหาเพิ่มเติม (Needs Review)";
+                msgEl.innerText = "แนะนำให้กลับไปทบทวนขั้นตอนที่ตอบผิดเพื่อเสริมสร้างความเข้าใจที่แม่นยำยิ่งขึ้น";
+            }
+
+            // Breakdown Grid
+            const breakdownGrid = document.getElementById('stageBreakdownGrid');
+            breakdownGrid.innerHTML = Object.keys(stageScores).filter(s => stageScores[s].total > 0).map(s => {
+                const data = stageScores[s];
+                const p = Math.round((data.score / data.total) * 100);
+                return `
+                    <div class="p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 space-y-1">
+                        <div class="flex justify-between text-[11px] font-bold uppercase text-slate-300">
+                            <span>${s}</span>
+                            <span>${data.score}/${data.total}</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-amber-400 rounded-full" style="width: ${p}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render Detailed Review
+            const reviewList = document.getElementById('reviewQuestionsList');
+            reviewList.innerHTML = activeQuestions.map((q, idx) => {
+                const userAns = userAnswers[q.id];
+                const isCorrect = userAns === q.correct;
+                const statusBadge = isCorrect 
+                    ? `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">ถูกต้อง</span>`
+                    : `<span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">ตอบผิด</span>`;
+
+                return `
+                    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="space-y-1">
+                                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">ข้อที่ ${idx + 1} (${q.stageTh})</span>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-base">${q.titleTh}</h5>
+                            </div>
+                            ${statusBadge}
+                        </div>
+
+                        <div class="space-y-2 text-xs sm:text-sm">
+                            ${q.optionsTh.map((optTh, oIdx) => {
+                                let style = "p-3 rounded-xl border border-slate-100 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900/30 text-slate-600 dark:text-slate-400";
+                                if (oIdx === q.correct) {
+                                    style = "p-3 rounded-xl border border-emerald-500/50 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-semibold";
+                                } else if (oIdx === userAns && !isCorrect) {
+                                    style = "p-3 rounded-xl border border-rose-500/50 bg-rose-50 dark:bg-rose-950/30 text-rose-900 dark:text-rose-200";
+                                }
+                                return `
+                                    <div class="${style} flex items-center justify-between">
+                                        <span>${String.fromCharCode(65 + oIdx)}. ${optTh}</span>
+                                        ${oIdx === q.correct ? '<span class="text-xs font-bold text-emerald-600">คำตอบที่ถูกต้อง</span>' : ''}
+                                        ${oIdx === userAns && !isCorrect ? '<span class="text-xs font-bold text-rose-600">คำตอบของคุณ</span>' : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <div class="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-xs sm:text-sm text-indigo-950 dark:text-indigo-200 space-y-1">
+                            <strong class="font-bold flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+                                <i data-lucide="info" class="w-4 h-4"></i> คำอธิบายเฉลย:
+                            </strong>
+                            <p>${q.explanationTh}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+            setLanguage(currentLang);
+        }
+    </script>
+</body>
+</html>
